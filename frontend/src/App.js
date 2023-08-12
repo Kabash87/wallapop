@@ -9,9 +9,7 @@ import {
   Navigate,
 } from "react-router-dom";
 
-const ListadoAnuncios = lazy(() =>
-  import("./componentes/anuncios/ListadoAnuncios")
-);
+const AdvertsList = lazy(() => import("./components/adverts/AdvertsList"));
 
 function App() {
   return (
@@ -19,8 +17,8 @@ function App() {
       <div className="App">
         <Suspense fallback={<div>Loading...</div>}>
           <Routes>
-            <Route path="/anuncios" element={<ListadoAnuncios />} />
-            <Route path="/" element={<Navigate to="/anuncios" />} />
+            <Route path="/adverts" element={<AdvertsList />} />
+            <Route path="/" element={<Navigate to="/adverts" />} />
           </Routes>
         </Suspense>
       </div>

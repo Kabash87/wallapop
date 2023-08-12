@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 // Definir el esquema del modelo de Anuncio
-const anuncioSchema = new mongoose.Schema({
+const advertSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   description: { type: String, required: true },
@@ -11,7 +11,7 @@ const anuncioSchema = new mongoose.Schema({
 });
 
 // Crear el modelo 'Anuncio' a partir del esquema
-const Anuncio = mongoose.model("anuncios", anuncioSchema);
+const Advert = mongoose.model("adverts", advertSchema);
 
 //exportar el modelo
-module.exports = Anuncio;
+module.exports = Advert;
