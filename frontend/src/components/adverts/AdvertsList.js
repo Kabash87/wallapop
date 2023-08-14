@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { getLatestAdverts } from "./service";
 
 const AdvertsList = () => {
   //TODO: dispatch to props
   const [adverts, setAdverts] = useState([]);
 
-  //TODO: mover llamada a API a un componente
   useEffect(() => {
-    axios.get("http://localhost:4000/api/adverts").then((response) => {
-      setAdverts(response.data.results);
+    // toma la lista de anuncios del backend por axios
+    getLatestAdverts().then((adverts) => {
+      setAdverts(adverts);
     });
   }, []);
   return (
