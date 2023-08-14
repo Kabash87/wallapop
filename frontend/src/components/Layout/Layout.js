@@ -1,9 +1,9 @@
-import Cabecera from "./Cabecera";
+import Header from "./Header";
 
 const Layout = ({ title, children }) => {
   return (
     <div>
-      <Cabecera />
+      <Header />
       <main>
         <h2>{title}</h2>
         {children}
