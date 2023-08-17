@@ -1,4 +1,4 @@
-import { Button, Col, Container, Nav, Navbar, Row } from "react-bootstrap";
+import { Button, Col, Container, Nav, Navbar } from "react-bootstrap";
 import { ReactComponent as Logo } from "../../assets/duck-icon.svg";
 import { Link } from "react-router-dom";
 

@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { getLatestAdverts } from "./service";
-import { Card, CardGroup, ListGroup } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  CardGroup,
+  Col,
+  Form,
+  ListGroup,
+  Row,
+} from "react-bootstrap";
 import { Link } from "react-router-dom";
 import placeholderPhoto from "../../assets/placeholder.png";
 import Layout from "../Layout/Layout";
@@ -17,7 +25,22 @@ const AdvertsList = () => {
   }, []);
   //TODO: el margen izquierdo de las cards desaparece
   return (
-    <Layout title="Listado de anuncios">
+    <Layout title="Compra y vende cosas de segunda mano">
+      <Form inline>
+        <Row className="justify-content-center my-5">
+          <Col xs="auto">
+            <Form.Control
+              type="text"
+              placeholder="Buscar en todos los anuncios"
+              className=" mr-sm-2"
+              style={{ width: "600px" }}
+            />
+          </Col>
+          <Col xs="auto">
+            <Button variant="secondary">Buscar</Button>
+          </Col>
+        </Row>
+      </Form>
       <div className="AdvertsList">
         <div className="d-flex justify-content-center">
           <CardGroup>
