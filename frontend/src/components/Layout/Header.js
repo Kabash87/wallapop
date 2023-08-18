@@ -17,7 +17,7 @@ function Header() {
           </Nav>
           <Col xs="auto" className="ms-auto">
             <Link to="/login">
-              <Button variant="secondary">Registrarte o Iniciar sesion</Button>
+              <Button variant="secondary">Registrarte o Iniciar sesión</Button>
             </Link>
           </Col>
         </Navbar.Collapse>
