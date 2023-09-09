@@ -13,8 +13,8 @@ const AdvertDetail = (props) => {
     getAdvert(params.advertId).then((advert) => setAdvert(advert));
   }, [params.advertId]);
 
-  //TODO: botones de modificar anuncios o borrar en caso de ser dueño del anuncio
-  //TODO: boton de contactar en caso de querer vender al anunciante o de comprar en caso de querer comprar.
+  //TODO: LOGIN botones de modificar anuncios o borrar en caso de ser dueño del anuncio
+  //TODO: LOGIN boton de contactar en caso de querer vender al anunciante o de comprar en caso de querer comprar.
 
   return (
     <Layout title="Detalle de anuncio">

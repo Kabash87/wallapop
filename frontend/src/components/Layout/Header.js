@@ -3,7 +3,7 @@ import { ReactComponent as Logo } from "../../assets/duck-icon.svg";
 import { Link } from "react-router-dom";
 
 function Header() {
-  //TODO: hacer que el boton de registrar o iniciar sesion sea de desloguear cuando se onlogin
+  //TODO: LOGIN hacer que el boton de registrar o iniciar sesion sea de desloguear cuando se onlogin
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="lg">
       <Container>
