@@ -8,15 +8,11 @@ import {
   Alert,
   Modal,
 } from "react-bootstrap";
-import { createUser } from "./service";
+import { recoveryPass } from "./service";
 import { Link } from "react-router-dom";
 
-function CreateRegister() {
-  const [name, setName] = useState("");
-  const [number, setNumber] = useState("");
+function Recovery() {
   const [email, setEmail] = useState("");
-  const [gender, setGender] = useState("hombre");
-  const [password, setPassword] = useState("");
 
   // Estado para almacenar el mensaje de éxito
   const [successMessage, setSuccessMessage] = useState("");
@@ -33,19 +29,9 @@ function CreateRegister() {
   const validateForm = () => {
     const errors = {};
     // Comprobaciones para cada campo requerido
-    if (!name) {
-      errors.name = "El nombre es obligatorio";
-    }
-    if (!number) {
-      errors.price = "El número telefonico es obligatorio";
-    }
     if (!email) {
       errors.price = "El correo electronico es obligatorio";
     }
-    if (!password) {
-      errors.password = "La contraseña es obligatoria";
-    }
-
     // Actualiza el estado de los errores de validación
     setFormErrors(errors);
 
@@ -67,30 +53,23 @@ function CreateRegister() {
     // Cerrar el Modal de confirmación
     setShowModal(false);
 
-    const newUser = {
-      name: name,
-      number: number,
+    const newPass = {
       email: email,
-      gender: gender,
-      password: password,
     };
-    console.log("Datos a enviar al servidor:", newUser);
+    console.log("Datos a enviar al servidor:", newPass);
 
     // Realizar la petición POST al backend
     try {
-      await createUser(newUser); // Llama a la función de la API
+      await recoveryPass(newPass); // Llama a la función de la API
       setSuccessMessage(
-        "Usuario creado con exito, revise su correo electronico para verificar su cuenta"
+        "Se ha enviado un correo de recuperacion para cambiar la contraseña de la cuenta"
       );
       setErrorMessage("");
-      setName("");
-      setNumber("");
       setEmail("");
-      setPassword("");
     } catch (error) {
       // Si ocurre un error, establecer el mensaje de error y limpiar el mensaje de éxito
       setErrorMessage(
-        "Error al crear el anuncio. Por favor, inténtalo de nuevo."
+        "No se ha encontrado el correo dentro de la Base de Datos."
       );
       setSuccessMessage("");
     }
@@ -105,6 +84,8 @@ function CreateRegister() {
 
   return (
     <Container>
+      <br />
+      <br />
       <Row className="justify-content-md-center">
         <Col md="6">
           {/*Modal de confirmación */}
@@ -113,7 +94,7 @@ function CreateRegister() {
               <Modal.Title>Confirmar</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              ¿Estás seguro de que deseas crear el anuncio?
+              ¿Estás seguro de que deseas cambiar tu contraseña?
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCancel}>
@@ -129,39 +110,27 @@ function CreateRegister() {
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
           {/*Alert para mostrar el mensaje de error */}
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-          <Form onSubmit={handleSubmit} encType="multipart/form-data">
+          <Form
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+            style={{
+              padding: "30px",
+              width: "700px",
+              borderRadius: "30px",
+              backgroundColor: "#46278A",
+              color: "#FFFFFF ",
+              position: "absolute",
+              top: "25%",
+              left: "25%",
+            }}
+          >
             <br />
-            <h2>Registrate gratis</h2>
-            <p>No te pierdas de todas las cosas nuevas que tenemos para ti</p>
+            <h2>Recuperar contraseña</h2>
+            <p>
+              Ingresa el correo electronico con que creaste tu cuenta y te
+              enviaremos un enlace para recuperar tu contraseña{" "}
+            </p>
             <br />
-
-            <Form.Group controlId="formName">
-              <Form.Label>Nombre y Apellido:</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="¿Como te llamas?"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              {formErrors.name && (
-                <Form.Text className="text-danger">{formErrors.name}</Form.Text>
-              )}
-            </Form.Group>
-
-            <Form.Group controlId="formGender">
-              <Form.Label>¿Cual es tu género?</Form.Label>
-              <Form.Control
-                as="select"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-              >
-                <option selected disabled>
-                  - - - Selecciona tu género - - -
-                </option>
-                <option value="hombre">Hombre</option>
-                <option value="mujer">Mujer</option>
-              </Form.Control>
-            </Form.Group>
 
             <Form.Group controlId="formEmail">
               <Form.Label>Correo Electronico:</Form.Label>
@@ -177,47 +146,16 @@ function CreateRegister() {
                 </Form.Text>
               )}
             </Form.Group>
-
-            <Form.Group controlId="formPrice">
-              <Form.Label>Número de telefono:</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Ingresa tu numero de contacto"
-                value={number}
-                onChange={(e) => setNumber(e.target.value)}
-              />
-              {formErrors.number && (
-                <Form.Text className="text-danger">
-                  {formErrors.number}
-                </Form.Text>
-              )}
-            </Form.Group>
-
-            <Form.Group controlId="formPassword">
-              <Form.Label>Contraseña:</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Ingrese su contraseña"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-              {formErrors.password && (
-                <Form.Text className="text-danger">
-                  {formErrors.password}
-                </Form.Text>
-              )}
-            </Form.Group>
-
             <br />
             <Button variant="primary" type="submit">
-              Registrarse
+              Enviar correo
             </Button>
             <br />
             <br />
             <p>
-              ¿Ya tienes una cuenta creada?{" "}
-              <Link to="/login" style={{ textDecoration: "none" }}>
-                Inicia Sesión
+              ¿Estas perdido?{" "}
+              <Link to="/" style={{ textDecoration: "none" }}>
+                Volver al Inicio
               </Link>
             </p>
           </Form>
@@ -227,4 +165,4 @@ function CreateRegister() {
   );
 }
 
-export default CreateRegister;
+export default Recovery;

@@ -8,13 +8,15 @@ import {
   Alert,
   Modal,
 } from "react-bootstrap";
-// import { createAd } from "./service";
+import { recoveryPass2 } from "./service";
 import { Link } from "react-router-dom";
-import { Login } from "./service";
 
-function LoginForm() {
-  const [email, setEmail] = useState("");
+function PasswordNew() {
   const [password, setPassword] = useState("");
+  const [password2, setPassword2] = useState("");
+
+  const cookie = require("js-cookie");
+  const emailToken = cookie.get("recovery-pass");
 
   // Estado para almacenar el mensaje de éxito
   const [successMessage, setSuccessMessage] = useState("");
@@ -31,13 +33,12 @@ function LoginForm() {
   const validateForm = () => {
     const errors = {};
     // Comprobaciones para cada campo requerido
-    if (!email) {
-      errors.email = "El correo es obligatorio";
-    }
     if (!password) {
-      errors.password = "La contraseña es obligatorio";
+      errors.price = "La nueva contraseña es obligatoria";
     }
-
+    if (!password2) {
+      errors.price = "La nueva contraseña es obligatoria";
+    }
     // Actualiza el estado de los errores de validación
     setFormErrors(errors);
 
@@ -51,34 +52,35 @@ function LoginForm() {
     // Realiza la validación del formulario antes de enviar la solicitud
     if (validateForm()) {
       // Mostrar el Modal de confirmación
-      handleConfirm();
-      //setShowModal(true);
+      setShowModal(true);
     }
   };
 
   const handleConfirm = async () => {
     // Cerrar el Modal de confirmación
-    //setShowModal(false);
+    setShowModal(false);
 
-    const loginForm = {
-      email: email,
+    const newPass2 = {
       password: password,
+      emailToken: emailToken,
+      password2: password2,
     };
-    console.log("Datos a enviar al servidor:", loginForm);
-
     // Realizar la petición POST al backend
     try {
-      await Login(loginForm); // Llama a la función de la API
-      setSuccessMessage("Login hecho con éxito, bienvenido de vuelta");
+      await recoveryPass2(newPass2); // Llama a la función de la API
+      setSuccessMessage(
+        "Se ha cambiado la contraseña de su cuenta correctamente"
+      );
       setErrorMessage("");
-      setEmail("");
       setPassword("");
-      window.location.href = "http://localhost:3000/adverts";
+      setPassword2("");
+      alert(
+        "La contraseña se ha cambiado correctamente, Inicie Sesion de nuevo"
+      );
+      window.location.href = "http://localhost:4000/logout";
     } catch (error) {
       // Si ocurre un error, establecer el mensaje de error y limpiar el mensaje de éxito
-      setErrorMessage(
-        "Error al iniciar sesion. Por favor, inténtalo de nuevo."
-      );
+      setErrorMessage("Las contraseñas no coinciden entre ellas.");
       setSuccessMessage("");
     }
   };
@@ -88,10 +90,22 @@ function LoginForm() {
     setShowModal(false);
   };
 
+  if (!emailToken) {
+    window.location.href = "http://localhost:3000/";
+  }
   // Lógica para manejar el envío del formulario y crear el anuncio
 
   return (
-    <Container>
+    <Container
+      style={{
+        display: "flex",
+        alignItems: "center",
+        margin: "0 auto",
+        padding: "17px",
+      }}
+    >
+      <br />
+      <br />
       <Row className="justify-content-md-center">
         <Col md="6">
           {/*Modal de confirmación */}
@@ -100,7 +114,7 @@ function LoginForm() {
               <Modal.Title>Confirmar</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              ¿Estás seguro de que deseas crear el Usuario?
+              ¿Estás seguro de que deseas cambiar tu contraseña?
             </Modal.Body>
             <Modal.Footer>
               <Button variant="secondary" onClick={handleCancel}>
@@ -116,30 +130,31 @@ function LoginForm() {
           {successMessage && <Alert variant="success">{successMessage}</Alert>}
           {/*Alert para mostrar el mensaje de error */}
           {errorMessage && <Alert variant="danger">{errorMessage}</Alert>}
-          <Form onSubmit={handleSubmit} encType="multipart/form-data">
+
+          <Form
+            onSubmit={handleSubmit}
+            encType="multipart/form-data"
+            style={{
+              padding: "30px",
+              width: "700px",
+              borderRadius: "30px",
+              backgroundColor: "#BC05C8",
+              color: "#FFFFFF ",
+            }}
+          >
             <br />
-            <h2>Iniciar Sesion</h2>
-            <p>No te pierdas de todas las cosas nuevas que tenemos para ti</p>
-            <br />
-            <Form.Group controlId="formName">
-              <Form.Label>Correo Electronico:</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Ingresa tu correo electronico..."
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              {formErrors.name && (
-                <Form.Text className="text-danger">
-                  {formErrors.email}
-                </Form.Text>
-              )}
-            </Form.Group>
+            <h2>Recuperar contraseña</h2>
+            <p>
+              Ingresa tu nueva contraseña y asegurate repitiendola para
+              actualizar la configuracion en tu cuenta{" "}
+            </p>
+            <h6>Su correo electronico es: {emailToken}</h6>
+
             <Form.Group controlId="formPrice">
-              <Form.Label>Contraseña: </Form.Label>
+              <Form.Label> Nueva Contraseña: </Form.Label>
               <Form.Control
                 type="password"
-                placeholder="Ingresa tu contraseña..."
+                placeholder="Ingresa tu  nueva contraseña..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -150,21 +165,30 @@ function LoginForm() {
               )}
             </Form.Group>
             <br />
+            <Form.Group controlId="formPrice2">
+              <Form.Label>Repita la Nueva Contraseña: </Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Repite tu nueva contraseña..."
+                value={password2}
+                onChange={(e) => setPassword2(e.target.value)}
+              />
+              {formErrors.price && (
+                <Form.Text className="text-danger">
+                  {formErrors.price}
+                </Form.Text>
+              )}
+            </Form.Group>
+            <br />
             <Button variant="primary" type="submit">
-              Iniciar Sesión
+              Cambiar contraseña
             </Button>
             <br />
             <br />
             <p>
-              ¿No tienes una cuenta creada?{" "}
-              <Link to="/register" style={{ textDecoration: "none" }}>
-                Registrate aquí
-              </Link>
-            </p>
-            <p>
-              ¿Olvidastes tu contraseña?{" "}
-              <Link to="/recovery" style={{ textDecoration: "none" }}>
-                Recuperar contraseña
+              ¿Estas perdido?{" "}
+              <Link to="/login" style={{ textDecoration: "none" }}>
+                Iniciar Sesion
               </Link>
             </p>
           </Form>
@@ -174,4 +198,4 @@ function LoginForm() {
   );
 }
 
-export default LoginForm;
+export default PasswordNew;

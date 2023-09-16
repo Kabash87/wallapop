@@ -14,30 +14,16 @@ import placeholderPhoto from "../../assets/placeholder.png";
 import Layout from "../Layout/Layout";
 import DeleteAd from "./DeleteAd";
 
-
 const AdvertsList = () => {
   //TODO: dispatch to props
   const [adverts, setAdverts] = useState([]);
   const [query, setQuery] = useState("");
-
-const EmptyList = () => {
-  return (
-    <div>
-      <h3>Todavía no hay anuncios, publica el primero!</h3>
-      <Button as={Link} variant="dark" to="/create-advert">
-        Crear Anuncio
-      </Button>
-    </div>
-  );
-};
-
   useEffect(() => {
     // toma la lista de anuncios del backend por axios
     getLatestAdverts().then((adverts) => {
       setAdverts(adverts);
     });
   }, []);
-
   //TODO: el margen izquierdo de las cards desaparece
 
   const handleAdDeleted = (deletedId) => {
@@ -52,8 +38,49 @@ const EmptyList = () => {
     (advert.name ?? "").toUpperCase().startsWith(query.toUpperCase())
   );
 
+  const cookie = require("js-cookie");
+  const username = cookie.get("user-name");
+  const emailToken = cookie.get("email-user");
+
   return (
     <Layout title="Compra y vende cosas de segunda mano">
+      <div>
+        {username ? (
+          <div
+            className="hidden"
+            style={{
+              padding: "30px",
+              width: "500px",
+              margin: "0 auto",
+              borderRadius: "30px",
+              backgroundColor: "#CEFE98",
+            }}
+          >
+            <h5>Hola {username}, Bienvenido de vuelta</h5>
+            <h6>Sesion Iniciada con {emailToken}</h6>
+            <br />
+            <Link to="http://localhost:4000/logout">
+              <Button variant="secondary">Cerrar Sesion</Button>
+            </Link>
+          </div>
+        ) : (
+          <div
+            className="hidden"
+            style={{
+              padding: "30px",
+              width: "700px",
+              margin: "0 auto",
+              borderRadius: "30px",
+              backgroundColor: "#98FEC0",
+            }}
+          >
+            <h5>
+              Inicia Sesion para conocer los productos cerca de ti 🏡. O crea tu
+              nueva cuenta totalmente gratis👊
+            </h5>
+          </div>
+        )}
+      </div>
       <Form>
         <Row className="justify-content-center my-5">
           <Col xs="auto">
@@ -72,15 +99,16 @@ const EmptyList = () => {
         </Row>
       </Form>
 
-      <Link to="/create-advert" style={{ textDecoration: "none" }}>
-        <Button variant="primary">Crear Anuncio</Button>
-      </Link>
-      <br />
-      <br />
+      {username ? (
+        <div className="hidden">
+          <Link to="/create-advert" style={{ textDecoration: "none" }}>
+            <Button variant="primary">Crear Anuncio</Button>
+          </Link>
+        </div>
+      ) : (
+        <h1> </h1>
+      )}
 
-      <Link to="http://localhost:4000/logout">
-        <Button variant="secondary">Cerrar Sesion</Button>
-      </Link>
       <br />
       <br />
       <div className="AdvertsList">
@@ -122,7 +150,6 @@ const EmptyList = () => {
             ))}
           </CardGroup>
         </div>
-
       </div>
     </Layout>
   );

@@ -23,6 +23,8 @@ export const createAd = (newAdvert) => {
   formData.append("type", newAdvert.type);
   formData.append("tags", newAdvert.tags);
   formData.append("photo", newAdvert.photo);
+  formData.append("username", newAdvert.username);
+  formData.append("email", newAdvert.email);
 
   return client.post(`${advertsUrl}/create-advert`, formData, {
     headers: {

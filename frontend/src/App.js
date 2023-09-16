@@ -13,8 +13,9 @@ const AdvertsList = lazy(() => import("./components/adverts/AdvertsList"));
 const CreateAdForm = lazy(() => import("./components/adverts/CreateAdForm"));
 const EditAdForm = lazy(() => import("./components/adverts/EditAdForm"));
 const LoginForm = lazy(() => import("./components/auth/LoginForm"));
-const Register = lazy(() => import("./components/auth/register"));
-const AdvertDetail = lazy(() => import("./components/adverts/AdvertDetail"));
+const CreateRegister = lazy(() => import("./components/auth/register"));
+const Recovery = lazy(() => import("./components/recovery/recovery"));
+const PasswordNew = lazy(() => import("./components/recovery/newpass"));
 
 function App() {
   return (
@@ -24,11 +25,12 @@ function App() {
           <Routes>
             <Route path="/adverts" element={<AdvertsList />} />
             <Route path="/login" element={<LoginForm />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/detail/:advertId" element={<AdvertDetail />} />
+            <Route path="/register" element={<CreateRegister />} />
             <Route path="/" element={<Navigate to="/adverts" />} />
             <Route path="/create-advert" element={<CreateAdForm />} />
             <Route path="/edit/:id" element={<EditAdForm />} />
+            <Route path="/recovery" element={<Recovery />} />
+            <Route path="/restore-password" element={<PasswordNew />} />
           </Routes>
         </Suspense>
       </div>
