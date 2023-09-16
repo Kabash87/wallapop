@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const cors = require("cors");
-
 //carga del modelo de anuncio
 const Advert = require("../../models/Advert.js");
 const User = require("../../models/User.js");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
-const cookie = require("cookie-parser");
+const cookie = require("js-cookie");
 const { loginrequired } = require("../../config/JWT.js");
 
 //Configuracion de correos
@@ -40,12 +39,11 @@ router.use(
 );
 
 // GET /api/adverts
-router.get("/", loginrequired, async (req, res, next) => {
+// router.get("/", loginrequired, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const adverts = await Advert.find();
     res.json({ results: adverts });
-    console.log(token2);
-
   } catch (error) {
     console.log(error); //TODO:BORRAR cuando dev termine
     next(error);
@@ -73,7 +71,8 @@ router.post(
     try {
       console.log("Datos enviados desde el frontend:", req.body);
       // Obtener los datos del anuncio desde el cuerpo de la solicitud
-      const { name, price, description, type, tags, photo } = req.body;
+      const { name, price, description, type, tags, photo, username, email } =
+        req.body;
 
       // Obtener el nombre del archivo del campo de "foto" cargado
       // const photo = req.file.filename;
@@ -86,6 +85,8 @@ router.post(
         type,
         tags,
         photo,
+        username,
+        email,
       });
 
       // Guardar el anuncio en la base de datos
@@ -210,28 +211,75 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// Ruta para editar un anuncio por ID
-router.put("/edit/:id", async (req, res, next) => {
+//Recuperacion de contraseña
+router.post("/recovery", async (req, res) => {
   try {
-    const { id } = req.params;
-    const updatedData = req.body; // Los datos actualizados se deben enviar en el cuerpo de la solicitud
+    const { email } = req.body;
+    const findUser = await User.findOne({ email: email });
+    if (findUser) {
+      console.log("Se ha encontrado una coincidencia");
+      const changePass = findUser.email;
+      res.cookie("recovery-pass", changePass);
+      res.status(201).json({
+        mensaje:
+          "Se ha enviado el enlace de recuperacion a su correo electronico",
+      });
+      //Envio de Correo Electronico
+      var mailOptions = {
+        from: "whataduck.project@gmail.com",
+        to: email,
+        subject: " What a Duck! 🦆 Recuperar cuenta y cambiar contraseña 🔄",
+        html: `<h2>¿Has olvidado tu contraseña en What a Duck?, </h2>
+            <h4> Porfavor, ingrese al siguiente enlace para cambiar la contraseña de su cuenta...</h4>
+            <a href="http://localhost:3000/restore-password?token=${changePass}">Cambiar contraseña</a>`,
+      };
 
-    // Aquí puedes realizar la validación de datos si es necesario
-
-    // Actualizar el anuncio por su ID y obtener el anuncio actualizado
-    const updatedAd = await Advert.findByIdAndUpdate(id, updatedData, {
-      new: true,
-    });
-
-    if (!updatedAd) {
-      return res.status(404).json({ message: "Anuncio no encontrado" });
+      //Se envia el correo de verificacion
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(
+            "El correo de recuperacion ha sido enviado correctamente"
+          );
+        }
+      });
+    } else {
+      console.log("No hay nada alli");
+      res.status(500).json({
+        mensaje: "El correo no esta registrado en la Base de datos.",
+      });
     }
+  } catch (err) {
+    console.log(err);
+  }
+});
 
-    // Si se actualiza correctamente, devolver el anuncio actualizado
-    res.json(updatedAd);
-  } catch (error) {
+//Recuperacion de contraseña
+router.post("/change-password", async (req, res) => {
+  try {
+    const { password, password2, emailToken } = req.body;
+    if (password == password2) {
+      const findUser = await User.findOne({ email: emailToken });
+      console.log(findUser.name);
 
-    next(error);
+      /**Se encripta la nueva contraseña */
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, salt);
+      const newPass = hashPassword;
+      const updatedPass = await User.updateOne(
+        { email: emailToken },
+        { $set: { password: newPass } }
+      );
+
+      res.json(updatedPass);
+    } else {
+      res.status(500).json({
+        mensaje: "Las constraseñas no son iguales.",
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 });
 
@@ -277,6 +325,5 @@ router.delete("/:id", async (req, res, next) => {
     next(error);
   }
 });
-
 
 module.exports = router;

@@ -13,6 +13,7 @@ const loginrequired = async (req, res, next) => {
     }
   } else {
     console.log("Token no encontrado");
+    res.render("http://localhost:3000/login");
   }
 };
 

@@ -5,9 +5,11 @@ const advertSchema = new mongoose.Schema({
   name: { type: String, required: true },
   price: { type: Number, required: true },
   description: { type: String, required: true },
-  type: { type: String, enum: ['compra', 'venta'], required: true },
+  type: { type: String, enum: ["compra", "venta"], required: true },
   tags: { type: [String], required: true },
-  photo: { type: String }, 
+  photo: { type: String },
+  username: { type: String },
+  email: { type: String },
 });
 
 // Crear el modelo 'Anuncio' a partir del esquema
