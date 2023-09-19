@@ -4,7 +4,22 @@ const cors = require("cors");
 const Advert = require("../../models/Advert.js");
 const cookie = require("cookie-parser");
 const upload = require("../../config/multerConfig");
+const bcrypt = require("bcrypt");
 // const { loginrequired } = require("../../config/JWT.js");
+const User = require("../../models/User.js");
+
+//Configuracion de correos
+const nodemailer = require("nodemailer");
+var transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "whataduck.project@gmail.com",
+    pass: process.env.PASSWORD,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
 
 router.use(
   cors({
@@ -145,6 +160,79 @@ router.delete("/:id", async (req, res, next) => {
     res.status(204).end();
   } catch (error) {
     next(error);
+  }
+});
+
+//Recuperacion de contraseña
+router.post("/recovery", async (req, res) => {
+  try {
+    const { email } = req.body;
+    console.log(email);
+    const findUser = await User.findOne({ email: email });
+    if (findUser) {
+      console.log("Se ha encontrado una coincidencia");
+      const changePass = findUser.email;
+      res.cookie("recovery-pass", changePass);
+      res.status(201).json({
+        mensaje:
+          "Se ha enviado el enlace de recuperacion a su correo electronico",
+      });
+      //Envio de Correo Electronico
+      var mailOptions = {
+        from: "whataduck.project@gmail.com",
+        to: email,
+        subject: " What a Duck! 🦆 Recuperar cuenta y cambiar contraseña 🔄",
+        html: `<h2>¿Has olvidado tu contraseña en What a Duck?, </h2>
+            <h4> Porfavor, ingrese al siguiente enlace para cambiar la contraseña de su cuenta...</h4>
+            <a href="http://localhost:3000/restore-password?token=${changePass}">Cambiar contraseña</a>`,
+      };
+
+      //Se envia el correo de verificacion
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(
+            "El correo de recuperacion ha sido enviado correctamente"
+          );
+        }
+      });
+    } else {
+      console.log("No hay nada alli");
+      res.status(500).json({
+        mensaje: "El correo no esta registrado en la Base de datos.",
+      });
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//Recuperacion de contraseña
+router.post("/change-password", async (req, res) => {
+  try {
+    const { password, password2, emailToken } = req.body;
+    if (password == password2) {
+      const findUser = await User.findOne({ email: emailToken });
+      console.log(findUser.name);
+
+      /**Se encripta la nueva contraseña */
+      const salt = await bcrypt.genSalt(10);
+      const hashPassword = await bcrypt.hash(password, salt);
+      const newPass = hashPassword;
+      const updatedPass = await User.updateOne(
+        { email: emailToken },
+        { $set: { password: newPass } }
+      );
+
+      res.json(updatedPass);
+    } else {
+      res.status(500).json({
+        mensaje: "Las constraseñas no son iguales.",
+      });
+    }
+  } catch (err) {
+    console.log(err);
   }
 });
 
