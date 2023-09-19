@@ -52,7 +52,7 @@ function LoginForm() {
         setErrorMessage("");
         setEmail("");
         setPassword("");
-        window.location.href = "http://localhost:3000/adverts";
+        window.location.href = `/adverts`;
       } catch (error) {
         // Si ocurre un error, establecer el mensaje de error y limpiar el mensaje de éxito
         setErrorMessage(
