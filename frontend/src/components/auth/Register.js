@@ -79,7 +79,6 @@ function CreateRegister() {
       gender: gender,
       password: password,
     };
-    console.log("Datos a enviar al servidor:", newUser);
 
     // Realizar la petición POST al backend
     try {

@@ -9,9 +9,9 @@ router.get("/:id", async (req, res, next) => {
   
     try {
       const advert = await Advert.findById(id);
-      console.log("Anuncio encontrado:", advert);
       res.json(advert);
     } catch (error) {
+      console.error("Error al obtener el anuncio:", error);
       next(error);
     }
   });

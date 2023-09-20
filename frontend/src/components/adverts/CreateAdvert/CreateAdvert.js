@@ -52,7 +52,12 @@ function CreateAdvert() {
       tags: tags.split(",").map((tag) => tag.trim()),
       photo,
     };
-    await postAd(newAdvert);
+
+    // Recuperar el token de localStorage
+    const token = localStorage.getItem('token');
+    // Pasar el token como segundo argumento a postAd
+    await postAd(newAdvert, token);
+    
   };
 
   const handleCancel = () => {

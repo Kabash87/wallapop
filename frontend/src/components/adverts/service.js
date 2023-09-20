@@ -15,12 +15,7 @@ export const getAdvert = (id) => {
   return client.get(url);
 };
 
-export const getTags = () => {
-  const url = `${advertsUrl}/tags`;
-  return client.get(url);
-};
-
-export const createAd = (newAdvert) => {
+export const createAd = (newAdvert, token) => {
   const formData = new FormData();
   formData.append("name", newAdvert.name);
   formData.append("price", newAdvert.price);
@@ -32,7 +27,9 @@ export const createAd = (newAdvert) => {
   return client.post(`${advertsUrl}/create-advert`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
+      "Authorization": `Bearer ${token}`,
     },
+    withCredentials: true, 
   });
 };
 

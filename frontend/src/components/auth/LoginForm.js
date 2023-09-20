@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Row, Col, Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Login } from "./service";
 import Layout from "../Layout/Layout";
+import { useAuth } from "../auth/AuthContext";
 
 function LoginForm() {
+  const { setIsLogged } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -43,16 +46,21 @@ function LoginForm() {
         email: email,
         password: password,
       };
-      console.log("Datos a enviar al servidor:", loginForm);
 
       // Realizar la petición POST al backend
       try {
-        await Login(loginForm); // Llama a la función de la API
+        const response = await Login(loginForm); // Llama a la función de la API
+
+        // Si el servidor devuelve un token y userId
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("userId", response.userId);
+        setIsLogged(true);
+
         setSuccessMessage("Login hecho con éxito, bienvenido de vuelta");
         setErrorMessage("");
         setEmail("");
         setPassword("");
-        window.location.href = `/adverts`;
+        navigate("/adverts");
       } catch (error) {
         // Si ocurre un error, establecer el mensaje de error y limpiar el mensaje de éxito
         setErrorMessage(
@@ -89,7 +97,7 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                {formErrors.name && (
+                {formErrors.email && (
                   <Form.Text className="text-danger">
                     {formErrors.email}
                   </Form.Text>
@@ -103,9 +111,9 @@ function LoginForm() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                {formErrors.price && (
+                {formErrors.password && (
                   <Form.Text className="text-danger">
-                    {formErrors.price}
+                    {formErrors.password}
                   </Form.Text>
                 )}
               </Form.Group>

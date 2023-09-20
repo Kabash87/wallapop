@@ -6,9 +6,9 @@ export const usePostAd = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [redirectToHome, setRedirectToHome] = useState(false);
 
-  const postAd = async (newAdvert) => {
+  const postAd = async (newAdvert, token) => {
     try {
-      await createAd(newAdvert);
+      await createAd(newAdvert, token);
       setSuccessMessage("Anuncio creado con éxito");
       setErrorMessage("");
       setTimeout(() => {
