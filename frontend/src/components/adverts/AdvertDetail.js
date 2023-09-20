@@ -50,7 +50,11 @@ const AdvertDetail = () => {
                 }
               />
               <Card.Text>{advert.description}</Card.Text>
-              <Card.Text>Se ofrece {advert.price} €</Card.Text>
+              <Card.Text>
+                {advert.type === "compra"
+                  ? `Se ofrece: ${advert.price}€`
+                  : `Se vende por: ${advert.price}€`}
+              </Card.Text>
               <Card.Footer>Etiquetas: {advert.tags}</Card.Footer>
               {advert && userId === advert.owner && (
                 <>
